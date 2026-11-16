@@ -4,13 +4,17 @@ Manual identification of three BMW iDrive 7 ECU candidates: BDC (0x40), left hea
 
 ## What it reads
 
-Only eight fixed identification DIDs per candidate: F150 (BMW SGBD), F180/F181/F182 (boot/application/application-data **identification**), F187/F188/F189 (part and software identifiers), F191 (hardware number). An ECU can refuse or not implement them. No VIN is deliberately requested. Raw replies and printable hints are saved without guessing their BMW-specific format. Welcome compatibility always remains **not determined** until the actual identifiers are reviewed.
+Version 0.1.1 uses five fixed identification DIDs per candidate: F150 (SGBD family), F101 (current SVK, kept raw), F18A (supplier), F18B (manufacturing data), F18C (serial number). Each is explicitly described as a UDS 22 read in Default mode by the matching BDC_G05 / FLM02_L / FLM02_R PRG documentation. No VIN is requested. Serial and raw identification data remain in the local private report.
+
+The first F150 reply must exactly match BDC_G05 / 0F2680 at 40, FLM02_L / 0F26C0 at 43, or FLM02_R / 0F26D0 at 44. A missing/refused/mismatched family immediately skips that ECU; no speculative alternate DIDs or sessions. These families were mapped from an owner-authorized identification capture; no actual report or serial numbers are published here. A successful family match does not establish exact hardware/software compatibility.
+
+Source definitions: [BDC_G05](https://github.com/emdzej/ediabasx-docs-sgbd/blob/main/docs/sgbd/BDC_G05.md), [FLM02_L](https://github.com/emdzej/ediabasx-docs-sgbd/blob/main/docs/sgbd/FLM02_L.md), [FLM02_R](https://github.com/emdzej/ediabasx-docs-sgbd/blob/main/docs/sgbd/FLM02_R.md). These are extracted diagnostic references, not an OEM-approved coding procedure. Their welcome-mode labels do not prove that this car supports selecting or customizing them.
 
 ## Write barrier
 
 No diagnostic request occurs at startup. The user must press **Read identification**, with fresh stationary speed data (<0.5 km/h, received within 5 seconds). Speed is re-read every 2 seconds. Stop, leaving the page, movement, missing speed data or shutdown cancels queued requests. The last in-flight read can still finish.
 
-Every outgoing TASU call is independently checked at the transport boundary. Only SID 0x22, the three physical ECU addresses, and exactly one of the fixed identification DIDs is accepted. No functional broadcasts, sessions, security access, lamp routines, actuator control, resets, fault clearing, downloads, brightness/current changes or coding writes. No arbitrary command input. Reads are sequential with a 250 ms minimum gap, at most 24 requested identifiers per scan; two missing replies skip that ECU. No retry into another diagnostic session when access is refused.
+Every outgoing TASU call is independently checked at the transport boundary. Only SID 0x22, the three physical ECU addresses, and exactly one of the fixed identification DIDs is accepted. No functional broadcasts, sessions, security access, lamp routines, actuator control, resets, fault clearing, downloads, brightness/current changes or coding writes. No arbitrary command input. Reads are sequential with a 250 ms minimum gap, at most 15 requested identifiers per scan; two missing replies skip that ECU. No retry into another diagnostic session when access is refused.
 
 This guard is a software safeguard within this app, not OS-level isolation against a different privileged app. Do not run other coding or lamp-test applications during a scan.
 
@@ -38,7 +42,7 @@ node kit/tools/extract_sdk.js /path/to/donor/app.js oap-sdk
 npm run build
 ```
 
-MGU Store source catalog: `mgu-repo.json`. Without the donor SDK, the preview is **not an installable package**. This version is prepared offline and has NOT been run on a car. No car connection, read, coding, flash or lamp test was performed during development.
+MGU Store source catalog: `mgu-repo.json`. Without the donor SDK, the preview is **not an installable package**. Version 0.1.0 completed an owner-authorized read-only identification scan on the car. Version 0.1.1 adds documented reads and family matching; these new fields still need an on-car manual capture. No coding, flash or lamp actuation was performed.
 
 ## Risk and scope
 
@@ -49,4 +53,4 @@ References:
 - Standard identification DID names: https://udsoncan.readthedocs.io/en/latest/udsoncan/helper_classes.html
 - Coding backup limits and Expert Mode warning: https://bimmercode.app/faq/ and https://bimmercode.app/manual/
 
-Version 0.1.0. Written using OpenAI Codex; local simulated tests only, no human review or on-car validation.
+Version 0.1.1. Written using OpenAI Codex; 10 simulated tests, no human review. Hardware/software compatibility remains undetermined.

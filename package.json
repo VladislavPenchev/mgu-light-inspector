@@ -1,1 +1,10 @@
-{"name":"mgu-light-inspector","version":"0.1.0","private":true,"scripts":{"test":"node --test test","build:preview":"python kit/tools/build.py --preview-only vgp_light_inspector","build":"python kit/tools/build.py vgp_light_inspector"}}
+{
+  "name": "mgu-light-inspector",
+  "version": "0.1.1",
+  "private": true,
+  "scripts": {
+    "test": "node --test test",
+    "build:preview": "python kit/tools/build.py --preview-only vgp_light_inspector",
+    "build": "python kit/tools/build.py vgp_light_inspector"
+  }
+}

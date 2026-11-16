@@ -16,7 +16,7 @@ class Scan {
         if(this.running)return;
         if(!this.allowed()) {this.message='Scan needs fresh stationary speed data';return;}
         this.running=true;this.cancelled=false;this.file=null;
-        const report={schema:1,app:'vgp_light_inspector',version:'0.1.0',started:new Date().toISOString(),status:'in-progress',
+        const report={schema:1,app:'vgp_light_inspector',version:'0.1.1',started:new Date().toISOString(),status:'in-progress',
             scope:'ECU identification only',restorable:false,codingBackup:false,firmwareBackup:false,
             welcomeCompatibility:'not determined',limitations:['No coding/configuration dump','No flash image','No restore operation','Missing/refused identifiers are not interpreted as support'],rows:[]};
         this.report=report;const deadline=this.now()+120000;this.deadline=deadline;
@@ -36,8 +36,11 @@ class Scan {
                         })]);
                     }finally{clearTimeout(timer);}
                     const row=Object.assign({address:target.address,ecu:target.name,did,label:entry[1],at:new Date().toISOString()},parse(reply,did));
+                    if(did===0xF150) {row.expectedSgbd=target.identity;row.familyMatch=row.status==='ok' && row.payloadHex===target.identity;}
                     report.rows.push(row);misses=row.status==='no-response'?misses+1:0;
                     this.archive.save(report);
+                    // Never continue on a different/unidentified ECU family.
+                    if(did===0xF150 && !row.familyMatch) break;
                 }
             }
             report.status='complete';this.message='Identification saved. Welcome compatibility not yet determined.';

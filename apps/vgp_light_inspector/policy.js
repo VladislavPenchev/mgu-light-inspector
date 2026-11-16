@@ -2,11 +2,17 @@
 // An allowlist, not a blacklist. No caller-provided ECU, SID, DID or bytes.
 const IFACE='com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu';
 const INSTANCE='SystemFunctionsInternalTasuInst1';
-const TARGETS=Object.freeze([{address:0x40,name:'BDC candidate'},{address:0x43,name:'Left headlight candidate'},{address:0x44,name:'Right headlight candidate'}].map(Object.freeze));
+// Expected families were confirmed by the owner's first F150 capture.
+const TARGETS=Object.freeze([
+    {address:0x40,name:'BDC_G05',identity:'0F2680'},
+    {address:0x43,name:'FLM02_L',identity:'0F26C0'},
+    {address:0x44,name:'FLM02_R',identity:'0F26D0'}
+].map(Object.freeze));
+// Explicitly documented UDS 22 reads in each matching PRG, Default mode.
 const DIDS=Object.freeze([
-    [0xF150,'BMW SGBD identifier'],[0xF180,'Boot software identification'],[0xF181,'Application software identification'],
-    [0xF182,'Application data IDENTIFICATION (not coding data)'],[0xF187,'Manufacturer spare part number'],
-    [0xF188,'Manufacturer ECU software number'],[0xF189,'Manufacturer ECU software version'],[0xF191,'Manufacturer ECU hardware number']
+    [0xF150,'BMW SGBD identifier'],[0xF101,'Current SVK identification (raw)'],
+    [0xF18A,'System supplier identifier'],[0xF18B,'ECU manufacturing data'],
+    [0xF18C,'ECU serial number']
 ].map(Object.freeze));
 function validate(method,r){
     if(method!=='sendTasuRequest'||!r||r.serviceID!==0x22||r.sourceAddress!==0xF2||r.subroutineID!==0||r.deadlockTime!==0)throw Error('Blocked: read-only transport envelope');
