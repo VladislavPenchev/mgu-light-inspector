@@ -1,0 +1,8 @@
+{
+ "id":"vgp_light_inspector","title":"Light Inspector (read only)","description":"Manual read-only identification of BDC and headlight ECU candidates. Saves non-restorable local diagnostic reports.","version":"0.1.0","vendor":"VladislavPenchev","license":"MIT","loggingId":"VLI1","iconGlyph":"LI","mguHmi":["ID7"],"autostart":false,"maxDiskUsage":67108864,
+ "signals":{
+  "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu":{"_instances":"SystemFunctionsInternalTasuInst1","_methods":["sendTasuRequest"],"_broadcasts":["sendTasuResponse"]},
+  "de.bmw.infotainment.vehicle.Vehicle2":{"statusCarSpeed2":"rs"}
+ },
+ "screens":[{"name":"MAIN","kind":"canvas","title":"Light Inspector - READ ONLY","buttons":[["BTN_SCAN","Read identification"],["BTN_STOP","Stop"]]}],"settings":[]
+}
